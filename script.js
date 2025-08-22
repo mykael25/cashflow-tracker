@@ -18,7 +18,6 @@ async function fetchTransactions() {
     const content = atob(data.content.replace(/\n/g, ""));
     return { sha: data.sha, transactions: JSON.parse(content) };
   } else if (res.status === 404) {
-    // file doesn't exist yet
     return { sha: null, transactions: [] };
   } else if (res.status === 401) {
     alert("Invalid token. Please re-enter.");
@@ -60,13 +59,32 @@ async function addTransaction(newTransaction) {
 
 function renderTransactions(transactions) {
   const list = document.getElementById("transaction-list");
+  const summary = document.getElementById("summary");
+
   list.innerHTML = "";
+
+  let income = 0;
+  let expense = 0;
 
   transactions.forEach((t) => {
     const li = document.createElement("li");
-    li.textContent = `${t.type}: ${t.amount} - ${t.note}`;
+    li.textContent = `${t.date.split("T")[0]} | ${t.type.toUpperCase()}: ₱${t.amount} - ${t.note}`;
     list.appendChild(li);
+
+    if (t.type === "income") {
+      income += parseFloat(t.amount);
+    } else if (t.type === "expense") {
+      expense += parseFloat(t.amount);
+    }
   });
+
+  let balance = income - expense;
+
+  summary.innerHTML = `
+    <p><strong>Total Income:</strong> ₱${income.toFixed(2)}</p>
+    <p><strong>Total Expense:</strong> ₱${expense.toFixed(2)}</p>
+    <p><strong>Balance:</strong> ₱${balance.toFixed(2)}</p>
+  `;
 }
 
 document.getElementById("transaction-form").addEventListener("submit", async (e) => {
@@ -76,19 +94,3 @@ document.getElementById("transaction-form").addEventListener("submit", async (e)
   const note = document.getElementById("note").value;
 
   if (!amount) return alert("Please enter an amount");
-
-  await addTransaction({
-    amount,
-    type,
-    note,
-    date: new Date().toISOString(),
-  });
-
-  document.getElementById("transaction-form").reset();
-});
-
-// Load existing ones at startup
-(async () => {
-  const { transactions } = await fetchTransactions();
-  renderTransactions(transactions);
-})();
