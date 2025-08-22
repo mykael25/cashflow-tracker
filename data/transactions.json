@@ -24,7 +24,7 @@
     "date": "2025-08-22T07:53:52.377Z"
   },
   {
-    "type": "Income",
+    "type": "income",
     "amount": 1,
     "note": "test",
     "date": "2025-08-22T08:02:36.956Z"
