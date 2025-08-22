@@ -1,2 +1,106 @@
-body { font-family: sans-serif; margin: 20px; }
-form input, form select, form button { margin: 5px; }
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background: #f4f7fa;
+}
+
+.container {
+  max-width: 500px;
+  margin: auto;
+  padding: 15px;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+.card {
+  background: white;
+  border-radius: 10px;
+  padding: 15px;
+  margin-bottom: 15px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.form-group {
+  margin-bottom: 12px;
+}
+
+input, select, button {
+  width: 100%;
+  padding: 10px;
+  font-size: 1rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  margin-top: 5px;
+}
+
+button.btn {
+  background: #0077ff;
+  color: white;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+button.btn:hover {
+  opacity: 0.9;
+}
+
+button.danger {
+  background: #e63946;
+}
+
+.toggle {
+  display: flex;
+  gap: 10px;
+}
+
+.toggle input[type="radio"] {
+  display: none;
+}
+
+.toggle label {
+  flex: 1;
+  text-align: center;
+  padding: 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  border: 2px solid transparent;
+}
+
+.income-btn {
+  background: #e0ffe0;
+  color: #2e7d32;
+}
+
+.expense-btn {
+  background: #ffe0e0;
+  color: #b71c1c;
+}
+
+.toggle input:checked + label {
+  border: 2px solid #0077ff;
+}
+
+.transaction-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px;
+  border-bottom: 1px solid #eee;
+}
+
+.transaction-item span {
+  font-size: 0.9rem;
+}
+
+.delete-btn {
+  background: none;
+  border: none;
+  color: #e63946;
+  font-size: 1.1rem;
+  cursor: pointer;
+}
