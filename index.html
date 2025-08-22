@@ -5,21 +5,24 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>💰 Expense Tracker</h1>
+  <h1>💰 Cashflow Tracker</h1>
 
-  <form id="expense-form">
-    <input type="text" id="note" placeholder="Note" required>
-    <input type="number" id="amount" placeholder="Amount" required>
+  <div id="summary"></div>
+
+  <form id="transaction-form">
+    <input type="number" id="amount" placeholder="Amount" required />
     <select id="type">
-      <option value="expense">Expense</option>
       <option value="income">Income</option>
+      <option value="expense">Expense</option>
     </select>
+    <input type="text" id="note" placeholder="Note" />
     <button type="submit">Add</button>
   </form>
 
-  <h2>History</h2>
-  <ul id="history"></ul>
+  <h2>Transactions</h2>
+  <ul id="transaction-list"></ul>
 
   <script src="script.js"></script>
 </body>
+
 </html>
