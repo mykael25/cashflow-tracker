@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>💰 Cashflow Tracker</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
 <body class="bg-gray-100 p-4">
@@ -20,6 +23,9 @@
              class="w-full border rounded-lg px-3 py-2" />
       <input type="text" id="note" placeholder="Note"
              class="w-full border rounded-lg px-3 py-2" />
+      <input type="date" id="dateInput"
+             class="w-full border rounded-lg px-3 py-2" />
+
       <div class="flex space-x-2">
         <button type="button" id="incomeBtn"
                 class="flex-1 bg-green-500 text-white py-2 rounded-lg">Income</button>
@@ -42,6 +48,13 @@
       <button class="monthly-half-btn bg-blue-200 px-2 py-1 rounded" data-half="second">Second Half</button>
     </div>
 
+    <!-- Date range filter -->
+    <div id="date-range" class="flex gap-2 mb-4">
+      <input type="date" id="dateFrom" class="border rounded-lg px-2 py-1 flex-1" />
+      <input type="date" id="dateTo" class="border rounded-lg px-2 py-1 flex-1" />
+      <button id="applyRange" class="bg-blue-500 text-white px-3 rounded">Apply</button>
+    </div>
+
     <!-- Chart -->
     <div class="mb-4">
       <canvas id="summaryChart"></canvas>
@@ -52,6 +65,18 @@
     <ul id="transaction-list" class="space-y-1"></ul>
 
     <button id="clearAll" class="w-full mt-3 bg-red-600 text-white py-2 rounded-lg">Clear All</button>
+
+    <!-- Export Section -->
+    <div class="mt-6 border-t pt-4">
+      <h2 class="text-lg font-semibold mb-2">📤 Export / Download</h2>
+      <div class="flex flex-col gap-2">
+        <button id="exportAll" class="bg-gray-300 py-2 rounded-lg">Download All (JSON)</button>
+        <button id="exportRange" class="bg-gray-300 py-2 rounded-lg">Download Date Range (JSON)</button>
+        <button id="exportFilter" class="bg-gray-300 py-2 rounded-lg">Download Current Filter (JSON)</button>
+        <button id="exportPDF" class="bg-gray-300 py-2 rounded-lg">Export as PDF</button>
+        <button id="exportScreenshot" class="bg-gray-300 py-2 rounded-lg">Save Screenshot</button>
+      </div>
+    </div>
   </div>
 
   <script src="script.js"></script>
