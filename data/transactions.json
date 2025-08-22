@@ -16,5 +16,11 @@
     "type": "income",
     "note": "salary for july 30",
     "date": "2025-08-01T00:00:00.000Z"
+  },
+  {
+    "amount": 1508,
+    "type": "expense",
+    "note": "aug first half exp",
+    "date": "2025-08-15T00:00:00.000Z"
   }
 ]
