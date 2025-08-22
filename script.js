@@ -1,4 +1,4 @@
-const repo = "USERNAME/expense-tracker"; // change USERNAME
+const repo = "mykael25/expense-tracker"; // change USERNAME
 const filePath = "data/transactions.json";
 let token = localStorage.getItem("gh_token");
 if (!token) {
