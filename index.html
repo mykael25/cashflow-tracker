@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Expense Tracker</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>💰 Expense Tracker</h1>
+
+  <form id="expense-form">
+    <input type="text" id="note" placeholder="Note" required>
+    <input type="number" id="amount" placeholder="Amount" required>
+    <select id="type">
+      <option value="expense">Expense</option>
+      <option value="income">Income</option>
+    </select>
+    <button type="submit">Add</button>
+  </form>
+
+  <h2>History</h2>
+  <ul id="history"></ul>
+
+  <script src="script.js"></script>
+</body>
+</html>
