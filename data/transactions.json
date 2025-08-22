@@ -46,5 +46,11 @@
     "type": "income",
     "note": "",
     "date": "2025-08-20T00:00:00.000Z"
+  },
+  {
+    "amount": 21,
+    "type": "expense",
+    "note": "bente uno",
+    "date": "2025-08-21T00:00:00.000Z"
   }
 ]
