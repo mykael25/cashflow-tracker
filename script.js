@@ -121,4 +121,74 @@ function renderTransactions(transactions) {
 
     li.innerHTML = `
       <span class="${compactView ? "text-sm" : ""}">
-        ${t.date.split("T")[0]} | ${t.type === "income" ? "➕" : "➖"} ₱${t.amount} ${compactView ? "
+        ${t.date.split("T")[0]} | ${t.type === "income" ? "➕" : "➖"} ₱${t.amount} ${compactView ? "" : "- " + t.note}
+      </span>
+      <button class="text-red-500 text-sm" onclick="deleteTransaction(${idx})">🗑️</button>
+    `;
+    list.appendChild(li);
+
+    if (t.type === "income") income += parseFloat(t.amount);
+    else expense += parseFloat(t.amount);
+  });
+
+  let balance = income - expense;
+
+  summary.innerHTML = `
+    <p><strong>Income:</strong> ₱${income.toFixed(2)}</p>
+    <p><strong>Expense:</strong> ₱${expense.toFixed(2)}</p>
+    <p><strong>Balance:</strong> ₱${balance.toFixed(2)}</p>
+  `;
+
+  const ctx = document.getElementById("summaryChart").getContext("2d");
+  if (chartInstance) chartInstance.destroy();
+  chartInstance = new Chart(ctx, {
+    type: "doughnut",
+    data: {
+      labels: ["Income", "Expense"],
+      datasets: [{ data: [income, expense], backgroundColor: ["#10B981", "#EF4444"] }],
+    },
+  });
+}
+
+// --- Event Listeners ---
+// Income & Expense act as Add buttons
+document.getElementById("incomeBtn").addEventListener("click", () => addTransaction("income"));
+document.getElementById("expenseBtn").addEventListener("click", () => addTransaction("expense"));
+
+// Filters
+document.querySelectorAll(".filter-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    currentFilter = btn.dataset.filter;
+    monthlyHalf = null;
+
+    // Show/hide monthly-half buttons
+    document.getElementById("monthly-half").classList.toggle("hidden", currentFilter !== "monthly");
+
+    fetchTransactions().then(({ transactions }) => renderTransactions(transactions));
+  });
+});
+
+// Monthly half selector
+document.querySelectorAll(".monthly-half-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    monthlyHalf = btn.dataset.half;
+    fetchTransactions().then(({ transactions }) => renderTransactions(transactions));
+  });
+});
+
+// Toggle view
+document.getElementById("toggleView").addEventListener("click", () => {
+  compactView = !compactView;
+  fetchTransactions().then(({ transactions }) => renderTransactions(transactions));
+});
+
+// Clear all
+document.getElementById("clearAll").addEventListener("click", () => {
+  if (confirm("Are you sure you want to delete all records?")) clearAllTransactions();
+});
+
+// Init
+(async () => {
+  const { transactions } = await fetchTransactions();
+  renderTransactions(transactions);
+})();
