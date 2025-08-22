@@ -1,11 +1,5 @@
 [
   {
-    "amount": "15",
-    "type": "income",
-    "note": "test",
-    "date": "2025-08-22T05:39:58.829Z"
-  },
-  {
     "amount": "2",
     "type": "expense",
     "note": "test",
