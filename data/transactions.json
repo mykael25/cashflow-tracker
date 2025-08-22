@@ -4,5 +4,11 @@
     "type": "income",
     "note": "Aug 15th salary",
     "date": "2025-08-16T00:00:00.000Z"
+  },
+  {
+    "amount": 180,
+    "type": "expense",
+    "note": "Pabango",
+    "date": "2025-08-22T13:10:54.103Z"
   }
 ]
