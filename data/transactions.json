@@ -4,5 +4,11 @@
     "type": "income",
     "note": "salary",
     "date": "2025-08-22T07:53:19.077Z"
+  },
+  {
+    "amount": 11,
+    "type": "expense",
+    "note": "lunch",
+    "date": "2025-08-22T07:53:33.855Z"
   }
 ]
