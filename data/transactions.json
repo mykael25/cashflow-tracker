@@ -1,1 +1,8 @@
-[]
+[
+  {
+    "amount": 25000,
+    "type": "income",
+    "note": "Aug 15th salary",
+    "date": "2025-08-16T00:00:00.000Z"
+  }
+]
