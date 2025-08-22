@@ -4,47 +4,51 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>💰 Cashflow Tracker</title>
-  <link rel="stylesheet" href="style.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body>
-  <h1>💰 Cashflow Tracker</h1>
+<body class="bg-gray-100 p-4">
+  <div class="max-w-md mx-auto bg-white shadow-lg rounded-xl p-4">
+    <h1 class="text-2xl font-bold mb-4 text-center">💰 Cashflow Tracker</h1>
 
-  <!-- Filters -->
-  <div class="filters">
-    <button onclick="setFilter('all')">All</button>
-    <button onclick="setFilter('monthly')">Monthly</button>
-    <button onclick="setFilter('15days')">Every 15 Days</button>
-    <button onclick="toggleCompact()">Toggle Compact View</button>
-  </div>
+    <!-- Summary -->
+    <div id="summary" class="mb-4 text-center"></div>
 
-  <!-- Summary -->
-  <div id="summary"></div>
+    <!-- Transaction Form -->
+    <form id="transaction-form" class="space-y-2 mb-4">
+      <input type="number" id="amount" placeholder="Amount" required
+             class="w-full border rounded-lg px-3 py-2" />
+      <div class="flex space-x-2">
+        <button type="button" id="incomeBtn"
+                class="flex-1 bg-green-500 text-white py-2 rounded-lg">Income</button>
+        <button type="button" id="expenseBtn"
+                class="flex-1 bg-red-500 text-white py-2 rounded-lg">Expense</button>
+      </div>
+      <input type="hidden" id="type" value="income" />
+      <input type="text" id="note" placeholder="Note"
+             class="w-full border rounded-lg px-3 py-2" />
+      <button type="submit" class="w-full bg-blue-500 text-white py-2 rounded-lg">Add</button>
+    </form>
 
-  <!-- Chart -->
-  <canvas id="chart" height="200"></canvas>
-
-  <!-- Add Transaction Form -->
-  <form id="transaction-form">
-    <input type="number" id="amount" placeholder="Amount" required />
-    <div class="toggle-type">
-      <label>
-        <input type="radio" name="type" value="income" checked /> Income
-      </label>
-      <label>
-        <input type="radio" name="type" value="expense" /> Expense
-      </label>
+    <!-- Filters -->
+    <div class="flex justify-between mb-2">
+      <button class="filter-btn bg-gray-200 px-2 py-1 rounded" data-filter="all">All</button>
+      <button class="filter-btn bg-gray-200 px-2 py-1 rounded" data-filter="15days">Last 15 Days</button>
+      <button class="filter-btn bg-gray-200 px-2 py-1 rounded" data-filter="monthly">Monthly</button>
+      <button id="toggleView" class="bg-gray-200 px-2 py-1 rounded">Compact</button>
     </div>
-    <input type="text" id="note" placeholder="Note" />
-    <button type="submit">Add</button>
-  </form>
 
-  <!-- Transaction List -->
-  <h2>Transactions</h2>
-  <ul id="transaction-list"></ul>
+    <!-- Chart -->
+    <div class="mb-4">
+      <canvas id="summaryChart"></canvas>
+    </div>
 
-  <!-- Clear All -->
-  <button id="clear-all">❌ Clear All Records</button>
+    <!-- Transactions -->
+    <h2 class="text-lg font-semibold mb-2">Transactions</h2>
+    <ul id="transaction-list" class="space-y-1"></ul>
+
+    <button id="clearAll" class="w-full mt-3 bg-red-600 text-white py-2 rounded-lg">Clear All</button>
+  </div>
 
   <script src="script.js"></script>
 </body>
