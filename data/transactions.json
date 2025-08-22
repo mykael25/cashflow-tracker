@@ -5,7 +5,6 @@
     "note": "salary prev",
     "date": "2025-07-22T07:53:19.077Z"
   },
-  
   {
     "amount": 50,
     "type": "income",
@@ -41,5 +40,11 @@
     "amount": 1,
     "note": "test",
     "date": "2025-08-22T08:02:36.956Z"
+  },
+  {
+    "amount": 33,
+    "type": "income",
+    "note": "",
+    "date": "2025-08-20T00:00:00.000Z"
   }
 ]
