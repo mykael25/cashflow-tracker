@@ -4,5 +4,11 @@
     "amount": 12,
     "note": "ex",
     "date": "2025-08-22T05:29:43.236Z"
+  },
+  {
+    "amount": "15",
+    "type": "income",
+    "note": "test",
+    "date": "2025-08-22T05:39:58.829Z"
   }
 ]
