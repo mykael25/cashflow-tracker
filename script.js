@@ -1,6 +1,10 @@
 const repo = "USERNAME/expense-tracker"; // change USERNAME
 const filePath = "data/transactions.json";
-const token = "YOUR_GITHUB_TOKEN"; // create personal access token
+let token = localStorage.getItem("gh_token");
+if (!token) {
+  token = prompt("Enter your GitHub Personal Access Token:");
+  localStorage.setItem("gh_token", token);
+}
 
 async function fetchTransactions() {
   const res = await fetch(`https://raw.githubusercontent.com/${repo}/main/${filePath}`);
