@@ -1,46 +1,77 @@
 body {
   font-family: Arial, sans-serif;
-  max-width: 500px;
-  margin: auto;
-  padding: 15px;
   background: #f9f9f9;
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  max-width: 480px;
+  margin: auto;
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
 h1, h2 {
   text-align: center;
+  margin-bottom: 15px;
+}
+
+#summary p {
+  margin: 5px 0;
+  font-size: 16px;
 }
 
 form {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  margin: 15px 0;
 }
 
-input, select, button {
+input {
   padding: 10px;
-  border-radius: 6px;
+  border-radius: 8px;
   border: 1px solid #ccc;
-  font-size: 1rem;
+}
+
+.btn-group {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
 }
 
 button {
-  background: #4caf50;
-  color: white;
+  flex: 1;
+  padding: 12px;
   border: none;
+  border-radius: 8px;
   cursor: pointer;
+  font-weight: bold;
 }
 
-button:hover {
-  background: #45a049;
+#add-income {
+  background: #4caf50;
+  color: white;
+}
+
+#add-expense {
+  background: #f44336;
+  color: white;
 }
 
 .filters {
+  margin: 15px 0;
   display: flex;
-  gap: 5px;
-  flex-wrap: wrap;
-  justify-content: center;
-  margin-bottom: 10px;
+  justify-content: space-around;
+}
+
+.filter-btn {
+  background: #ddd;
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
 }
 
 #transaction-list {
@@ -49,24 +80,15 @@ button:hover {
 }
 
 #transaction-list li {
-  background: white;
-  margin: 5px 0;
+  background: #f1f1f1;
+  margin: 6px 0;
   padding: 10px;
-  border-radius: 6px;
+  border-radius: 8px;
   display: flex;
   justify-content: space-between;
-  align-items: center;
 }
 
-#transaction-list li.income {
-  border-left: 5px solid green;
-}
-
-#transaction-list li.expense {
-  border-left: 5px solid red;
-}
-
-.compact #transaction-list li {
-  padding: 5px;
-  font-size: 0.9rem;
+canvas {
+  width: 100% !important;
+  height: 250px !important;
 }
