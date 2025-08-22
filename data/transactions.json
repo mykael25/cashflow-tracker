@@ -40,5 +40,11 @@
     "type": "expense",
     "note": "mc do",
     "date": "2025-08-22T10:00:45.164Z"
+  },
+  {
+    "amount": 15780,
+    "type": "expense",
+    "note": "salary ubos",
+    "date": "2025-08-22T10:01:36.307Z"
   }
 ]
