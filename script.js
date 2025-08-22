@@ -94,3 +94,18 @@ document.getElementById("transaction-form").addEventListener("submit", async (e)
   const note = document.getElementById("note").value;
 
   if (!amount) return alert("Please enter an amount");
+
+  await addTransaction({
+    amount,
+    type,
+    note,
+    date: new Date().toISOString(),
+  });
+
+  document.getElementById("transaction-form").reset();
+});
+
+(async () => {
+  const { transactions } = await fetchTransactions();
+  renderTransactions(transactions);
+})();
