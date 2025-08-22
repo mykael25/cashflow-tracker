@@ -10,5 +10,11 @@
     "type": "expense",
     "note": "lunch",
     "date": "2025-08-22T07:53:33.855Z"
+  },
+  {
+    "amount": 41,
+    "type": "expense",
+    "note": "creditcard",
+    "date": "2025-08-22T07:53:52.377Z"
   }
 ]
