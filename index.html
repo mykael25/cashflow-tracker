@@ -2,80 +2,50 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Cashflow Tracker</title>
   <link rel="stylesheet" href="style.css" />
-  <!-- Chart.js CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-  <header class="appbar">
+  <div class="app-container">
     <h1>💰 Cashflow Tracker</h1>
-  </header>
 
-  <main class="container">
-    <!-- Controls -->
-    <section class="card controls">
-      <div class="control-row">
-        <label for="groupBy">Group by</label>
-        <select id="groupBy">
-          <option value="all">All</option>
-          <option value="month">Monthly</option>
-          <option value="half">Every 15 Days</option>
-        </select>
+    <!-- Summary -->
+    <div id="summary"></div>
+
+    <!-- Filters -->
+    <div class="filters">
+      <button data-filter="all" class="filter-btn active">All</button>
+      <button data-filter="monthly" class="filter-btn">Monthly</button>
+      <button data-filter="15days" class="filter-btn">15 Days</button>
+      <button id="compact-toggle">Compact View</button>
+    </div>
+
+    <!-- Transaction Form -->
+    <form id="transaction-form">
+      <input type="number" id="amount" placeholder="Amount" required />
+      
+      <div class="toggle-group">
+        <input type="radio" name="type" id="income" value="income" checked />
+        <label for="income">Income</label>
+        <input type="radio" name="type" id="expense" value="expense" />
+        <label for="expense">Expense</label>
       </div>
-      <button id="clearAllBtn" class="btn danger">🗑️ Delete All</button>
-    </section>
 
-    <!-- Summary (follows grouping) -->
-    <section id="summary" class="card summary">
-      <!-- filled by JS -->
-    </section>
+      <input type="text" id="note" placeholder="Note" />
+      <button type="submit">Add</button>
+    </form>
 
     <!-- Chart -->
-    <section class="card">
-      <h3 class="card-title">Overview</h3>
-      <canvas id="groupChart" height="220"></canvas>
-    </section>
+    <canvas id="cashflow-chart"></canvas>
 
-    <!-- Transactions (grouped) -->
-    <section class="list-section">
-      <h3 class="card-title pad">Transactions</h3>
-      <div id="listContainer" class="list-container"></div>
-    </section>
-  </main>
+    <!-- Transactions -->
+    <h2>Transactions</h2>
+    <ul id="transaction-list"></ul>
 
-  <!-- FAB -->
-  <button id="fab" class="fab">＋</button>
-
-  <!-- Modal for Add -->
-  <div id="modal" class="modal hidden">
-    <div class="modal-backdrop"></div>
-    <div class="modal-card">
-      <h3>Add Transaction</h3>
-
-      <div class="toggle">
-        <input type="radio" name="type" id="typeIncome" value="income" checked />
-        <label for="typeIncome" class="toggle-btn income">Income</label>
-        <input type="radio" name="type" id="typeExpense" value="expense" />
-        <label for="typeExpense" class="toggle-btn expense">Expense</label>
-      </div>
-
-      <div class="field">
-        <label>Amount (₱)</label>
-        <input type="number" id="amountInput" inputmode="decimal" min="0.01" step="0.01" placeholder="0.00" required />
-      </div>
-
-      <div class="field">
-        <label>Note (optional)</label>
-        <input type="text" id="noteInput" maxlength="140" placeholder="e.g. coffee, salary" />
-      </div>
-
-      <div class="modal-actions">
-        <button id="cancelBtn" class="btn ghost">Cancel</button>
-        <button id="saveBtn" class="btn">Save</button>
-      </div>
-    </div>
+    <!-- Delete Options -->
+    <button id="delete-all" class="danger">Delete All Records</button>
   </div>
 
   <script src="script.js"></script>
