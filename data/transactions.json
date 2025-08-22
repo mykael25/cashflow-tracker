@@ -1,20 +1,20 @@
 [
   {
-    "amount": "15",
+    "amount": 50,
     "type": "income",
-    "note": "test",
-    "date": "2025-08-22T05:39:58.829Z"
+    "note": "salary",
+    "date": "2025-08-22T07:53:19.077Z"
   },
   {
-    "amount": "2",
+    "amount": 11,
     "type": "expense",
-    "note": "test",
-    "date": "2025-08-22T05:40:49.385Z"
+    "note": "lunch",
+    "date": "2025-08-22T07:53:33.855Z"
   },
   {
-    "amount": "50",
-    "type": "income",
-    "note": "",
-    "date": "2025-08-22T05:44:21.736Z"
+    "amount": 41,
+    "type": "expense",
+    "note": "creditcard",
+    "date": "2025-08-22T07:53:52.377Z"
   }
 ]
