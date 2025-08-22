@@ -24,12 +24,6 @@
     "date": "2025-08-22T07:51:22.388Z"
   },
   {
-    "amount": 1,
-    "type": "expense",
-    "note": "1",
-    "date": "2025-08-22T07:51:30.696Z"
-  },
-  {
     "amount": 12,
     "type": "income",
     "note": "12",
