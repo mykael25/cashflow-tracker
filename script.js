@@ -1,4 +1,4 @@
-const repo = "mykael25/cashflow-tracker"; 
+const repo = "mykael25/cashflow-tracker"; // change if needed
 const filePath = "data/transactions.json";
 const apiUrl = `https://api.github.com/repos/${repo}/contents/${filePath}`;
 
@@ -48,11 +48,6 @@ async function saveTransactions(transactions, sha) {
 }
 
 async function addTransaction(newTransaction) {
-  if (newTransaction.amount <= 0) {
-    alert("Amount must be greater than 0!");
-    return;
-  }
-
   const { sha, transactions } = await fetchTransactions();
   transactions.push(newTransaction);
 
@@ -65,88 +60,97 @@ async function addTransaction(newTransaction) {
 async function deleteTransaction(index) {
   const { sha, transactions } = await fetchTransactions();
   transactions.splice(index, 1);
-  await saveTransactions(transactions, sha);
+
+  const result = await saveTransactions(transactions, sha);
+  console.log("Delete response:", result);
+
   renderTransactions(transactions);
 }
 
-async function clearAll() {
-  if (!confirm("Are you sure you want to delete all records?")) return;
-  await saveTransactions([], null);
+async function deleteAll() {
+  const confirmDelete = confirm("Are you sure you want to delete ALL records?");
+  if (!confirmDelete) return;
+
+  const { sha } = await fetchTransactions();
+  const result = await saveTransactions([], sha);
+  console.log("Delete all response:", result);
+
   renderTransactions([]);
 }
 
-function groupTransactions(transactions, groupBy) {
-  if (groupBy === "all") return { "All Transactions": transactions };
+function calculateSummary(transactions, filter) {
+  let filtered = [];
 
-  let grouped = {};
+  if (filter === "monthly") {
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
 
-  transactions.forEach((t) => {
-    let date = new Date(t.date);
-    let key = "";
+    filtered = transactions.filter((t) => {
+      const d = new Date(t.date);
+      return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
+    });
+  } else if (filter === "15days") {
+    const now = new Date();
+    const day = now.getDate();
+    const startDay = day <= 15 ? 1 : 16;
+    const endDay = day <= 15 ? 15 : new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
 
-    if (groupBy === "month") {
-      key = `${date.getFullYear()}-${date.getMonth() + 1}`;
-    } else if (groupBy === "halfmonth") {
-      let half = date.getDate() <= 15 ? "1-15" : "16-end";
-      key = `${date.getFullYear()}-${date.getMonth() + 1} (${half})`;
-    }
+    filtered = transactions.filter((t) => {
+      const d = new Date(t.date);
+      return (
+        d.getMonth() === now.getMonth() &&
+        d.getFullYear() === now.getFullYear() &&
+        d.getDate() >= startDay &&
+        d.getDate() <= endDay
+      );
+    });
+  } else {
+    filtered = transactions;
+  }
 
-    if (!grouped[key]) grouped[key] = [];
-    grouped[key].push(t);
-  });
-
-  return grouped;
-}
-
-function renderTransactions(transactions) {
-  const listContainer = document.getElementById("transactions-container");
-  const summary = document.getElementById("summary");
-  const groupBy = document.getElementById("group-by").value;
-
-  listContainer.innerHTML = "";
-
-  let income = 0, expense = 0;
-
-  transactions.forEach((t) => {
+  let income = 0;
+  let expense = 0;
+  filtered.forEach((t) => {
     if (t.type === "income") income += parseFloat(t.amount);
     else expense += parseFloat(t.amount);
   });
 
-  let balance = income - expense;
+  return { income, expense, balance: income - expense };
+}
+
+function renderTransactions(transactions) {
+  const list = document.getElementById("transaction-list");
+  const summary = document.getElementById("summary");
+  const filter = document.getElementById("filter").value;
+
+  list.innerHTML = "";
+
+  transactions.forEach((t, index) => {
+    const li = document.createElement("li");
+    li.innerHTML = `
+      ${t.date.split("T")[0]} | ${t.type.toUpperCase()}: ₱${t.amount} - ${t.note}
+      <button onclick="deleteTransaction(${index})">❌</button>
+    `;
+    list.appendChild(li);
+  });
+
+  const totals = calculateSummary(transactions, filter);
+
   summary.innerHTML = `
-    <p><strong>Total Income:</strong> ₱${income.toFixed(2)}</p>
-    <p><strong>Total Expense:</strong> ₱${expense.toFixed(2)}</p>
-    <p><strong>Balance:</strong> ₱${balance.toFixed(2)}</p>
+    <p><strong>Total Income:</strong> ₱${totals.income.toFixed(2)}</p>
+    <p><strong>Total Expense:</strong> ₱${totals.expense.toFixed(2)}</p>
+    <p><strong>Balance:</strong> ₱${totals.balance.toFixed(2)}</p>
   `;
-
-  let grouped = groupTransactions(transactions, groupBy);
-
-  for (let group in grouped) {
-    let groupDiv = document.createElement("div");
-    groupDiv.className = "card";
-    let title = document.createElement("h3");
-    title.textContent = group;
-    groupDiv.appendChild(title);
-
-    grouped[group].forEach((t, i) => {
-      let item = document.createElement("div");
-      item.className = "transaction-item";
-      item.innerHTML = `
-        <span>${t.date.split("T")[0]} | ${t.type.toUpperCase()} ₱${t.amount} - ${t.note}</span>
-        <button class="delete-btn" onclick="deleteTransaction(${i})">✖</button>
-      `;
-      groupDiv.appendChild(item);
-    });
-
-    listContainer.appendChild(groupDiv);
-  }
 }
 
 document.getElementById("transaction-form").addEventListener("submit", async (e) => {
   e.preventDefault();
   const amount = parseFloat(document.getElementById("amount").value);
-  const type = document.querySelector("input[name='type']:checked").value;
+  const type = document.querySelector('input[name="type"]:checked').value;
   const note = document.getElementById("note").value;
+
+  if (!amount || amount <= 0) return alert("Amount must be greater than zero");
 
   await addTransaction({
     amount,
@@ -158,12 +162,12 @@ document.getElementById("transaction-form").addEventListener("submit", async (e)
   document.getElementById("transaction-form").reset();
 });
 
-document.getElementById("group-by").addEventListener("change", async () => {
+document.getElementById("filter").addEventListener("change", async () => {
   const { transactions } = await fetchTransactions();
   renderTransactions(transactions);
 });
 
-document.getElementById("clear-all").addEventListener("click", clearAll);
+document.getElementById("delete-all").addEventListener("click", deleteAll);
 
 (async () => {
   const { transactions } = await fetchTransactions();
