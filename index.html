@@ -7,54 +7,37 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="container">
-    <h1>💰 Cashflow Tracker</h1>
+  <h1>💰 Cashflow Tracker</h1>
 
-    <!-- Summary Section -->
-    <div id="summary" class="card"></div>
+  <div>
+    <label for="filter">View: </label>
+    <select id="filter">
+      <option value="all">All</option>
+      <option value="monthly">This Month</option>
+      <option value="15days">This 15 Days</option>
+    </select>
+  </div>
 
-    <!-- Transaction Form -->
-    <form id="transaction-form" class="card">
-      <div class="form-group">
-        <label>Amount (₱)</label>
-        <input type="number" id="amount" min="1" step="0.01" required />
-      </div>
+  <div id="summary"></div>
 
-      <div class="form-group">
-        <label>Type</label>
-        <div class="toggle">
-          <input type="radio" name="type" id="income" value="income" checked />
-          <label for="income" class="income-btn">Income</label>
-
-          <input type="radio" name="type" id="expense" value="expense" />
-          <label for="expense" class="expense-btn">Expense</label>
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label>Note</label>
-        <input type="text" id="note" placeholder="Description (optional)" />
-      </div>
-
-      <button type="submit" class="btn">➕ Add Transaction</button>
-    </form>
-
-    <!-- Filters -->
-    <div class="card">
-      <label>Group by:</label>
-      <select id="group-by">
-        <option value="all">All</option>
-        <option value="month">Monthly</option>
-        <option value="halfmonth">Every 15 Days</option>
-      </select>
-      <button id="clear-all" class="btn danger">🗑️ Clear All Records</button>
+  <form id="transaction-form">
+    <input type="number" id="amount" placeholder="Amount" required />
+    
+    <div>
+      <label><input type="radio" name="type" value="income" checked /> Income</label>
+      <label><input type="radio" name="type" value="expense" /> Expense</label>
     </div>
 
-    <!-- Transactions -->
-    <h2>Transactions</h2>
-    <div id="transactions-container"></div>
-  </div>
+    <input type="text" id="note" placeholder="Note" />
+    <button type="submit">Add</button>
+  </form>
+
+  <button id="delete-all">🗑️ Delete All</button>
+
+  <h2>Transactions</h2>
+  <ul id="transaction-list"></ul>
 
   <script src="script.js"></script>
 </body>
+
 </html>
