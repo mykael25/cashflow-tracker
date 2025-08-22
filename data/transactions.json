@@ -1,8 +1,8 @@
 [
   {
-    "type": "expense",
-    "amount": 111,
-    "note": "test",
-    "date": "2025-08-22T05:28:55.083Z"
+    "type": "income",
+    "amount": 222,
+    "note": "test 2",
+    "date": "2025-08-22T05:29:05.765Z"
   }
 ]
