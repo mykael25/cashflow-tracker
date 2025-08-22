@@ -3,50 +3,48 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Cashflow Tracker</title>
+  <title>💰 Cashflow Tracker</title>
   <link rel="stylesheet" href="style.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-  <div class="app-container">
-    <h1>💰 Cashflow Tracker</h1>
+  <h1>💰 Cashflow Tracker</h1>
 
-    <!-- Summary -->
-    <div id="summary"></div>
-
-    <!-- Filters -->
-    <div class="filters">
-      <button data-filter="all" class="filter-btn active">All</button>
-      <button data-filter="monthly" class="filter-btn">Monthly</button>
-      <button data-filter="15days" class="filter-btn">15 Days</button>
-      <button id="compact-toggle">Compact View</button>
-    </div>
-
-    <!-- Transaction Form -->
-    <form id="transaction-form">
-      <input type="number" id="amount" placeholder="Amount" required />
-      
-      <div class="toggle-group">
-        <input type="radio" name="type" id="income" value="income" checked />
-        <label for="income">Income</label>
-        <input type="radio" name="type" id="expense" value="expense" />
-        <label for="expense">Expense</label>
-      </div>
-
-      <input type="text" id="note" placeholder="Note" />
-      <button type="submit">Add</button>
-    </form>
-
-    <!-- Chart -->
-    <canvas id="cashflow-chart"></canvas>
-
-    <!-- Transactions -->
-    <h2>Transactions</h2>
-    <ul id="transaction-list"></ul>
-
-    <!-- Delete Options -->
-    <button id="delete-all" class="danger">Delete All Records</button>
+  <!-- Filters -->
+  <div class="filters">
+    <button onclick="setFilter('all')">All</button>
+    <button onclick="setFilter('monthly')">Monthly</button>
+    <button onclick="setFilter('15days')">Every 15 Days</button>
+    <button onclick="toggleCompact()">Toggle Compact View</button>
   </div>
+
+  <!-- Summary -->
+  <div id="summary"></div>
+
+  <!-- Chart -->
+  <canvas id="chart" height="200"></canvas>
+
+  <!-- Add Transaction Form -->
+  <form id="transaction-form">
+    <input type="number" id="amount" placeholder="Amount" required />
+    <div class="toggle-type">
+      <label>
+        <input type="radio" name="type" value="income" checked /> Income
+      </label>
+      <label>
+        <input type="radio" name="type" value="expense" /> Expense
+      </label>
+    </div>
+    <input type="text" id="note" placeholder="Note" />
+    <button type="submit">Add</button>
+  </form>
+
+  <!-- Transaction List -->
+  <h2>Transactions</h2>
+  <ul id="transaction-list"></ul>
+
+  <!-- Clear All -->
+  <button id="clear-all">❌ Clear All Records</button>
 
   <script src="script.js"></script>
 </body>

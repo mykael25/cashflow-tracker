@@ -1,4 +1,4 @@
-const repo = "mykael25/cashflow-tracker"; 
+const repo = "mykael25/cashflow-tracker";
 const filePath = "data/transactions.json";
 const apiUrl = `https://api.github.com/repos/${repo}/contents/${filePath}`;
 
@@ -9,7 +9,6 @@ if (!token) {
 }
 
 let currentFilter = "all";
-let compactMode = false;
 let chartInstance = null;
 
 async function fetchTransactions() {
@@ -28,6 +27,7 @@ async function fetchTransactions() {
     localStorage.removeItem("gh_token");
     location.reload();
   }
+
   return { sha: null, transactions: [] };
 }
 
@@ -51,14 +51,12 @@ async function saveTransactions(transactions, sha) {
 }
 
 async function addTransaction(newTransaction) {
-  if (parseFloat(newTransaction.amount) <= 0) {
-    alert("Amount must be greater than zero.");
-    return;
-  }
+  if (newTransaction.amount <= 0) return alert("Amount must be greater than zero!");
 
   const { sha, transactions } = await fetchTransactions();
   transactions.push(newTransaction);
-  const result = await saveTransactions(transactions, sha);
+
+  await saveTransactions(transactions, sha);
   renderTransactions(transactions);
 }
 
@@ -69,63 +67,45 @@ async function deleteTransaction(index) {
   renderTransactions(transactions);
 }
 
-async function deleteAllTransactions() {
-  if (!confirm("Are you sure you want to delete all records?")) return;
+async function clearAllTransactions() {
+  if (!confirm("Delete all records?")) return;
   const { sha } = await fetchTransactions();
   await saveTransactions([], sha);
   renderTransactions([]);
 }
 
-function applyFilter(transactions) {
-  if (currentFilter === "monthly") {
-    const grouped = {};
-    transactions.forEach(t => {
-      const month = new Date(t.date).toLocaleString("default", { month: "short", year: "numeric" });
-      if (!grouped[month]) grouped[month] = [];
-      grouped[month].push(t);
-    });
-    return grouped;
-  } else if (currentFilter === "15days") {
-    const grouped = {};
-    transactions.forEach(t => {
-      const d = new Date(t.date);
-      const half = d.getDate() <= 15 ? "1st Half" : "2nd Half";
-      const key = `${half} - ${d.toLocaleString("default", { month: "short", year: "numeric" })}`;
-      if (!grouped[key]) grouped[key] = [];
-      grouped[key].push(t);
-    });
-    return grouped;
-  }
-  return { All: transactions };
-}
+function groupTransactions(transactions, filter) {
+  const groups = {};
 
-function renderSummary(transactions) {
-  let income = 0, expense = 0;
-  transactions.forEach(t => {
-    if (t.type === "income") income += parseFloat(t.amount);
-    else expense += parseFloat(t.amount);
+  transactions.forEach((t) => {
+    const date = new Date(t.date);
+
+    let key = "all";
+    if (filter === "monthly") {
+      key = `${date.getFullYear()}-${date.getMonth() + 1}`;
+    } else if (filter === "15days") {
+      const half = date.getDate() <= 15 ? "1st Half" : "2nd Half";
+      key = `${date.getFullYear()}-${date.getMonth() + 1} ${half}`;
+    }
+
+    if (!groups[key]) groups[key] = { income: 0, expense: 0 };
+    groups[key][t.type] += parseFloat(t.amount);
   });
-  let balance = income - expense;
 
-  document.getElementById("summary").innerHTML = `
-    <p><strong>Total Income:</strong> ₱${income.toFixed(2)}</p>
-    <p><strong>Total Expense:</strong> ₱${expense.toFixed(2)}</p>
-    <p><strong>Balance:</strong> ₱${balance.toFixed(2)}</p>
-  `;
+  return groups;
 }
 
 function renderChart(transactions) {
-  const ctx = document.getElementById("cashflow-chart").getContext("2d");
-  if (chartInstance) chartInstance.destroy(); // prevent infinite growth
+  const ctx = document.getElementById("chart").getContext("2d");
+  const groups = groupTransactions(transactions, currentFilter);
 
-  const grouped = applyFilter(transactions);
-  const labels = Object.keys(grouped);
-  const incomeData = labels.map(label =>
-    grouped[label].filter(t => t.type === "income").reduce((a,b)=>a+parseFloat(b.amount),0)
-  );
-  const expenseData = labels.map(label =>
-    grouped[label].filter(t => t.type === "expense").reduce((a,b)=>a+parseFloat(b.amount),0)
-  );
+  const labels = Object.keys(groups);
+  const incomeData = labels.map((k) => groups[k].income);
+  const expenseData = labels.map((k) => groups[k].expense);
+
+  if (chartInstance) {
+    chartInstance.destroy();
+  }
 
   chartInstance = new Chart(ctx, {
     type: "bar",
@@ -133,62 +113,71 @@ function renderChart(transactions) {
       labels,
       datasets: [
         { label: "Income", data: incomeData, backgroundColor: "green" },
-        { label: "Expense", data: expenseData, backgroundColor: "red" }
-      ]
+        { label: "Expense", data: expenseData, backgroundColor: "red" },
+      ],
     },
-    options: { responsive: true, maintainAspectRatio: false }
+    options: { responsive: true, maintainAspectRatio: false },
   });
 }
 
 function renderTransactions(transactions) {
   const list = document.getElementById("transaction-list");
+  const summary = document.getElementById("summary");
+
   list.innerHTML = "";
 
-  renderSummary(transactions);
-  renderChart(transactions);
+  let income = 0, expense = 0;
 
-  const grouped = applyFilter(transactions);
+  transactions.forEach((t, index) => {
+    const li = document.createElement("li");
+    li.className = t.type;
+    li.innerHTML = `
+      <span>${t.date.split("T")[0]} | ${t.type.toUpperCase()}: ₱${t.amount} - ${t.note}</span>
+      <button onclick="deleteTransaction(${index})">❌</button>
+    `;
+    list.appendChild(li);
 
-  Object.keys(grouped).forEach(group => {
-    const header = document.createElement("h3");
-    header.textContent = group;
-    list.appendChild(header);
-
-    grouped[group].forEach((t, index) => {
-      const li = document.createElement("li");
-      li.className = compactMode ? "compact" : "";
-      li.innerHTML = `
-        ${t.date.split("T")[0]} | ${t.type.toUpperCase()}: ₱${t.amount} - ${t.note}
-        <button onclick="deleteTransaction(${transactions.indexOf(t)})">X</button>
-      `;
-      list.appendChild(li);
-    });
+    if (t.type === "income") income += parseFloat(t.amount);
+    else expense += parseFloat(t.amount);
   });
+
+  let balance = income - expense;
+
+  summary.innerHTML = `
+    <p><strong>Total Income:</strong> ₱${income.toFixed(2)}</p>
+    <p><strong>Total Expense:</strong> ₱${expense.toFixed(2)}</p>
+    <p><strong>Balance:</strong> ₱${balance.toFixed(2)}</p>
+  `;
+
+  renderChart(transactions);
 }
 
-document.getElementById("transaction-form").addEventListener("submit", async e => {
+function setFilter(filter) {
+  currentFilter = filter;
+  fetchTransactions().then(({ transactions }) => renderTransactions(transactions));
+}
+
+function toggleCompact() {
+  document.body.classList.toggle("compact");
+}
+
+document.getElementById("transaction-form").addEventListener("submit", async (e) => {
   e.preventDefault();
   const amount = document.getElementById("amount").value;
-  const type = document.querySelector("input[name='type']:checked").value;
+  const type = document.querySelector('input[name="type"]:checked').value;
   const note = document.getElementById("note").value;
-  await addTransaction({ amount, type, note, date: new Date().toISOString() });
+
+  await addTransaction({
+    amount,
+    type,
+    note,
+    date: new Date().toISOString(),
+  });
+
   document.getElementById("transaction-form").reset();
 });
 
-document.getElementById("delete-all").addEventListener("click", deleteAllTransactions);
-document.querySelectorAll(".filter-btn").forEach(btn => {
-  btn.addEventListener("click", () => {
-    document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
-    btn.classList.add("active");
-    currentFilter = btn.dataset.filter;
-    fetchTransactions().then(d => renderTransactions(d.transactions));
-  });
-});
-
-document.getElementById("compact-toggle").addEventListener("click", () => {
-  compactMode = !compactMode;
-  fetchTransactions().then(d => renderTransactions(d.transactions));
-});
+document.getElementById("clear-all").addEventListener("click", clearAllTransactions);
 
 (async () => {
   const { transactions } = await fetchTransactions();

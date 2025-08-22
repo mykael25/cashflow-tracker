@@ -1,119 +1,72 @@
 body {
   font-family: Arial, sans-serif;
-  margin: 0;
-  padding: 0;
-  background: #f5f6fa;
-  color: #333;
-}
-
-.app-container {
-  max-width: 600px;
+  max-width: 500px;
   margin: auto;
-  padding: 1rem;
+  padding: 15px;
+  background: #f9f9f9;
 }
 
-h1 {
+h1, h2 {
   text-align: center;
-  margin-bottom: 1rem;
 }
 
-#summary {
-  background: #fff;
-  padding: 1rem;
-  border-radius: 10px;
-  margin-bottom: 1rem;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 15px 0;
+}
+
+input, select, button {
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+}
+
+button {
+  background: #4caf50;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #45a049;
 }
 
 .filters {
   display: flex;
+  gap: 5px;
   flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
-}
-
-.filter-btn, #compact-toggle, #delete-all {
-  flex: 1;
-  padding: 0.5rem;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: bold;
-}
-
-.filter-btn.active {
-  background: #3498db;
-  color: white;
-}
-
-#transaction-form {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
-}
-
-#transaction-form input, #transaction-form button {
-  padding: 0.6rem;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-}
-
-.toggle-group {
-  display: flex;
   justify-content: center;
-  gap: 1rem;
+  margin-bottom: 10px;
 }
 
-.toggle-group input {
-  display: none;
-}
-
-.toggle-group label {
-  padding: 0.5rem 1rem;
-  background: #ddd;
-  border-radius: 8px;
-  cursor: pointer;
-}
-
-.toggle-group input:checked + label {
-  background: #27ae60;
-  color: #fff;
-}
-
-ul {
+#transaction-list {
   list-style: none;
   padding: 0;
 }
 
-li {
-  background: #fff;
-  margin-bottom: 0.5rem;
-  padding: 0.8rem;
-  border-radius: 8px;
+#transaction-list li {
+  background: white;
+  margin: 5px 0;
+  padding: 10px;
+  border-radius: 6px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+#transaction-list li.income {
+  border-left: 5px solid green;
+}
+
+#transaction-list li.expense {
+  border-left: 5px solid red;
+}
+
+.compact #transaction-list li {
+  padding: 5px;
   font-size: 0.9rem;
-}
-
-li.compact {
-  font-size: 0.8rem;
-  padding: 0.4rem;
-}
-
-li button {
-  background: #e74c3c;
-  color: white;
-  border: none;
-  padding: 0.3rem 0.6rem;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-#delete-all.danger {
-  width: 100%;
-  margin-top: 1rem;
-  background: #c0392b;
-  color: white;
 }
