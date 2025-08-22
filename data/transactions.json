@@ -10,5 +10,11 @@
     "type": "income",
     "note": "salary for july 15",
     "date": "2025-07-16T00:00:00.000Z"
+  },
+  {
+    "amount": 10800,
+    "type": "income",
+    "note": "salary for july 30",
+    "date": "2025-08-01T00:00:00.000Z"
   }
 ]
