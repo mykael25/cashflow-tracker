@@ -2,6 +2,7 @@ const repo = "mykael25/cashflow-tracker";
 const filePath = "data/transactions.json";
 const apiUrl = `https://api.github.com/repos/${repo}/contents/${filePath}`;
 let currentFilter = "all";
+let monthlyHalf = null; // "first" or "second"
 let compactView = false;
 let chartInstance = null;
 
@@ -67,18 +68,40 @@ async function clearAllTransactions() {
 }
 
 function filterTransactions(transactions) {
+  const today = new Date();
+
   if (currentFilter === "15days") {
-    const cutoff = new Date();
-    cutoff.setDate(cutoff.getDate() - 15);
-    return transactions.filter((t) => new Date(t.date) >= cutoff);
-  } else if (currentFilter === "monthly") {
-    const month = new Date().getMonth();
-    const year = new Date().getFullYear();
+    const day = today.getDate();
+    const month = today.getMonth();
+    const year = today.getFullYear();
+
     return transactions.filter((t) => {
       const d = new Date(t.date);
-      return d.getMonth() === month && d.getFullYear() === year;
+      if (d.getMonth() !== month || d.getFullYear() !== year) return false;
+
+      if (day <= 15) {
+        return d.getDate() >= 1 && d.getDate() <= 15;
+      } else {
+        return d.getDate() >= 16;
+      }
+    });
+  } else if (currentFilter === "monthly") {
+    const month = today.getMonth();
+    const year = today.getFullYear();
+
+    return transactions.filter((t) => {
+      const d = new Date(t.date);
+      if (d.getMonth() !== month || d.getFullYear() !== year) return false;
+
+      if (monthlyHalf === "first") {
+        return d.getDate() >= 1 && d.getDate() <= 15;
+      } else if (monthlyHalf === "second") {
+        return d.getDate() >= 16;
+      }
+      return true; // if no half selected, return all of current month
     });
   }
+
   return transactions;
 }
 
@@ -98,61 +121,4 @@ function renderTransactions(transactions) {
 
     li.innerHTML = `
       <span class="${compactView ? "text-sm" : ""}">
-        ${t.date.split("T")[0]} | ${t.type === "income" ? "➕" : "➖"} ₱${t.amount} ${compactView ? "" : "- " + t.note}
-      </span>
-      <button class="text-red-500 text-sm" onclick="deleteTransaction(${idx})">🗑️</button>
-    `;
-    list.appendChild(li);
-
-    if (t.type === "income") income += parseFloat(t.amount);
-    else expense += parseFloat(t.amount);
-  });
-
-  let balance = income - expense;
-
-  summary.innerHTML = `
-    <p><strong>Income:</strong> ₱${income.toFixed(2)}</p>
-    <p><strong>Expense:</strong> ₱${expense.toFixed(2)}</p>
-    <p><strong>Balance:</strong> ₱${balance.toFixed(2)}</p>
-  `;
-
-  const ctx = document.getElementById("summaryChart").getContext("2d");
-  if (chartInstance) chartInstance.destroy();
-  chartInstance = new Chart(ctx, {
-    type: "doughnut",
-    data: {
-      labels: ["Income", "Expense"],
-      datasets: [{ data: [income, expense], backgroundColor: ["#10B981", "#EF4444"] }],
-    },
-  });
-}
-
-// --- Event Listeners ---
-// Income & Expense act as Add buttons
-document.getElementById("incomeBtn").addEventListener("click", () => addTransaction("income"));
-document.getElementById("expenseBtn").addEventListener("click", () => addTransaction("expense"));
-
-// Filters
-document.querySelectorAll(".filter-btn").forEach(btn => {
-  btn.addEventListener("click", () => {
-    currentFilter = btn.dataset.filter;
-    fetchTransactions().then(({ transactions }) => renderTransactions(transactions));
-  });
-});
-
-// Toggle view
-document.getElementById("toggleView").addEventListener("click", () => {
-  compactView = !compactView;
-  fetchTransactions().then(({ transactions }) => renderTransactions(transactions));
-});
-
-// Clear all
-document.getElementById("clearAll").addEventListener("click", () => {
-  if (confirm("Are you sure you want to delete all records?")) clearAllTransactions();
-});
-
-// Init
-(async () => {
-  const { transactions } = await fetchTransactions();
-  renderTransactions(transactions);
-})();
+        ${t.date.split("T")[0]} | ${t.type === "income" ? "➕" : "➖"} ₱${t.amount} ${compactView ? "

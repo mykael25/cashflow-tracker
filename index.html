@@ -29,11 +29,17 @@
     </form>
 
     <!-- Filters -->
-    <div class="flex justify-between mb-2">
+    <div class="flex flex-wrap gap-2 mb-2">
       <button class="filter-btn bg-gray-200 px-2 py-1 rounded" data-filter="all">All</button>
       <button class="filter-btn bg-gray-200 px-2 py-1 rounded" data-filter="15days">Last 15 Days</button>
       <button class="filter-btn bg-gray-200 px-2 py-1 rounded" data-filter="monthly">Monthly</button>
       <button id="toggleView" class="bg-gray-200 px-2 py-1 rounded">Compact</button>
+    </div>
+
+    <!-- Monthly half selection -->
+    <div id="monthly-half" class="flex gap-2 mb-2 hidden">
+      <button class="monthly-half-btn bg-blue-200 px-2 py-1 rounded" data-half="first">First Half</button>
+      <button class="monthly-half-btn bg-blue-200 px-2 py-1 rounded" data-half="second">Second Half</button>
     </div>
 
     <!-- Chart -->
