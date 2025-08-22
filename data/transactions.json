@@ -34,5 +34,11 @@
     "type": "income",
     "note": "salary for aug 15",
     "date": "2025-08-16T00:00:00.000Z"
+  },
+  {
+    "amount": 280,
+    "type": "expense",
+    "note": "mc do",
+    "date": "2025-08-22T10:00:45.164Z"
   }
 ]
