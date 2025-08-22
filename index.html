@@ -1,55 +1,237 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>💰 Cashflow Tracker</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cashflow Tracker</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0; padding: 1rem;
+      background: #f9f9f9;
+    }
+    h1 {
+      text-align: center;
+    }
+    .summary, .filters {
+      margin: 1rem 0;
+      padding: 1rem;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    .summary h2 {
+      margin: 0 0 .5rem;
+    }
+    .summary p {
+      margin: .2rem 0;
+      font-size: 1.1rem;
+    }
+    .form {
+      display: flex;
+      gap: .5rem;
+      margin-bottom: 1rem;
+    }
+    .form input {
+      flex: 1;
+      padding: .5rem;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+    .btn {
+      padding: .6rem 1rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      color: #fff;
+    }
+    .btn-income { background: #28a745; }
+    .btn-expense { background: #dc3545; }
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    li {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #fff;
+      margin-bottom: .5rem;
+      padding: .5rem;
+      border-radius: 6px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      font-size: .95rem;
+    }
+    .delete-btn {
+      border: none;
+      background: none;
+      color: #dc3545;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .filters label {
+      margin-right: 1rem;
+      font-size: .9rem;
+    }
+  </style>
 </head>
-<body class="bg-gray-100 p-4">
-  <div class="max-w-md mx-auto bg-white shadow-lg rounded-xl p-4">
-    <h1 class="text-2xl font-bold mb-4 text-center">💰 Cashflow Tracker</h1>
+<body>
+  <h1>Cashflow Tracker</h1>
 
-    <!-- Summary -->
-    <div id="summary" class="mb-4 text-center"></div>
-
-    <!-- Transaction Form -->
-    <form id="transaction-form" class="space-y-2 mb-4">
-      <input type="number" id="amount" placeholder="Amount" required
-             class="w-full border rounded-lg px-3 py-2" />
-      <div class="flex space-x-2">
-        <button type="button" id="incomeBtn"
-                class="flex-1 bg-green-500 text-white py-2 rounded-lg">Income</button>
-        <button type="button" id="expenseBtn"
-                class="flex-1 bg-red-500 text-white py-2 rounded-lg">Expense</button>
-      </div>
-      <input type="hidden" id="type" value="income" />
-      <input type="text" id="note" placeholder="Note"
-             class="w-full border rounded-lg px-3 py-2" />
-      <button type="submit" class="w-full bg-blue-500 text-white py-2 rounded-lg">Add</button>
-    </form>
-
-    <!-- Filters -->
-    <div class="flex justify-between mb-2">
-      <button class="filter-btn bg-gray-200 px-2 py-1 rounded" data-filter="all">All</button>
-      <button class="filter-btn bg-gray-200 px-2 py-1 rounded" data-filter="15days">Last 15 Days</button>
-      <button class="filter-btn bg-gray-200 px-2 py-1 rounded" data-filter="monthly">Monthly</button>
-      <button id="toggleView" class="bg-gray-200 px-2 py-1 rounded">Compact</button>
-    </div>
-
-    <!-- Chart -->
-    <div class="mb-4">
-      <canvas id="summaryChart"></canvas>
-    </div>
-
-    <!-- Transactions -->
-    <h2 class="text-lg font-semibold mb-2">Transactions</h2>
-    <ul id="transaction-list" class="space-y-1"></ul>
-
-    <button id="clearAll" class="w-full mt-3 bg-red-600 text-white py-2 rounded-lg">Clear All</button>
+  <div class="summary">
+    <h2>Summary (<span id="period-label">Monthly</span>)</h2>
+    <p>Income: <span id="income">0</span></p>
+    <p>Expense: <span id="expense">0</span></p>
+    <p>Balance: <span id="balance">0</span></p>
   </div>
 
-  <script src="script.js"></script>
+  <div class="filters">
+    <label><input type="radio" name="period" value="monthly" checked> Monthly</label>
+    <label><input type="radio" name="period" value="bi"> Bi-Monthly (15 days)</label>
+  </div>
+
+  <form id="transaction-form" class="form">
+    <input type="number" id="amount" placeholder="Amount" min="1" required>
+    <input type="text" id="note" placeholder="Note">
+    <button type="button" class="btn btn-income" id="income-btn">Income</button>
+    <button type="button" class="btn btn-expense" id="expense-btn">Expense</button>
+  </form>
+
+  <ul id="transaction-list"></ul>
+
+  <script>
+    const repo = "mykael25/cashflow-tracker"; 
+    const filePath = "data/transactions.json";
+    const apiUrl = `https://api.github.com/repos/${repo}/contents/${filePath}`;
+
+    let token = localStorage.getItem("gh_token");
+    if (!token) {
+      token = prompt("Enter your GitHub Personal Access Token:");
+      localStorage.setItem("gh_token", token);
+    }
+
+    async function fetchTransactions() {
+      let res = await fetch(apiUrl, { headers: { Authorization: `token ${token}` } });
+      if (res.status === 200) {
+        let data = await res.json();
+        const content = atob(data.content.replace(/\n/g, ""));
+        return { sha: data.sha, transactions: JSON.parse(content) };
+      } else if (res.status === 404) {
+        return { sha: null, transactions: [] };
+      } else if (res.status === 401) {
+        alert("Invalid token. Please re-enter.");
+        localStorage.removeItem("gh_token");
+        location.reload();
+      }
+      return { sha: null, transactions: [] };
+    }
+
+    async function saveTransactions(transactions, sha) {
+      const updatedContent = btoa(JSON.stringify(transactions, null, 2));
+      let res = await fetch(apiUrl, {
+        method: "PUT",
+        headers: { Authorization: `token ${token}`, "Content-Type": "application/json" },
+        body: JSON.stringify({
+          message: "Update transactions.json",
+          content: updatedContent,
+          sha: sha,
+        }),
+      });
+      return res.json();
+    }
+
+    async function addTransaction(newTransaction) {
+      const { sha, transactions } = await fetchTransactions();
+      transactions.push(newTransaction);
+      const result = await saveTransactions(transactions, sha);
+      renderTransactions(transactions);
+      updateSummary(transactions);
+    }
+
+    async function deleteTransaction(index) {
+      const { sha, transactions } = await fetchTransactions();
+      transactions.splice(index, 1);
+      const result = await saveTransactions(transactions, sha);
+      renderTransactions(transactions);
+      updateSummary(transactions);
+    }
+
+    function renderTransactions(transactions) {
+      const list = document.getElementById("transaction-list");
+      list.innerHTML = "";
+      transactions.forEach((t, i) => {
+        const li = document.createElement("li");
+        li.textContent = `${t.type}: ${t.amount} - ${t.note} (${new Date(t.date).toLocaleDateString()})`;
+        const delBtn = document.createElement("button");
+        delBtn.textContent = "✕";
+        delBtn.className = "delete-btn";
+        delBtn.onclick = () => deleteTransaction(i);
+        li.appendChild(delBtn);
+        list.appendChild(li);
+      });
+    }
+
+    function updateSummary(transactions) {
+      const periodType = document.querySelector("input[name='period']:checked").value;
+      const now = new Date();
+      const label = document.getElementById("period-label");
+
+      let filtered = [];
+      if (periodType === "monthly") {
+        filtered = transactions.filter(t => {
+          let d = new Date(t.date);
+          return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+        });
+        label.textContent = "Monthly";
+      } else {
+        filtered = transactions.filter(t => {
+          let d = new Date(t.date);
+          return d.getMonth() === now.getMonth() &&
+                 d.getFullYear() === now.getFullYear() &&
+                 ( (now.getDate() <= 15 && d.getDate() <= 15) ||
+                   (now.getDate() > 15 && d.getDate() > 15) );
+        });
+        label.textContent = "Bi-Monthly";
+      }
+
+      let income = filtered.filter(t => t.type === "Income").reduce((a, b) => a + Number(b.amount), 0);
+      let expense = filtered.filter(t => t.type === "Expense").reduce((a, b) => a + Number(b.amount), 0);
+
+      document.getElementById("income").textContent = income;
+      document.getElementById("expense").textContent = expense;
+      document.getElementById("balance").textContent = income - expense;
+    }
+
+    document.getElementById("income-btn").addEventListener("click", async () => {
+      const amount = Number(document.getElementById("amount").value);
+      const note = document.getElementById("note").value;
+      if (amount <= 0) return alert("Please enter a valid amount");
+      await addTransaction({ type: "Income", amount, note, date: new Date().toISOString() });
+      document.getElementById("transaction-form").reset();
+    });
+
+    document.getElementById("expense-btn").addEventListener("click", async () => {
+      const amount = Number(document.getElementById("amount").value);
+      const note = document.getElementById("note").value;
+      if (amount <= 0) return alert("Please enter a valid amount");
+      await addTransaction({ type: "Expense", amount, note, date: new Date().toISOString() });
+      document.getElementById("transaction-form").reset();
+    });
+
+    document.querySelectorAll("input[name='period']").forEach(radio => {
+      radio.addEventListener("change", async () => {
+        const { transactions } = await fetchTransactions();
+        updateSummary(transactions);
+      });
+    });
+
+    (async () => {
+      const { transactions } = await fetchTransactions();
+      renderTransactions(transactions);
+      updateSummary(transactions);
+    })();
+  </script>
 </body>
 </html>
