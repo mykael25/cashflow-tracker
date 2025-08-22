@@ -16,5 +16,11 @@
     "type": "income",
     "note": "",
     "date": "2025-08-22T05:44:21.736Z"
+  },
+  {
+    "amount": 13,
+    "type": "expense",
+    "note": "ex1",
+    "date": "2025-08-22T07:51:22.388Z"
   }
 ]
