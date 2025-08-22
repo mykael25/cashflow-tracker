@@ -18,16 +18,14 @@
     <form id="transaction-form" class="space-y-2 mb-4">
       <input type="number" id="amount" placeholder="Amount" required
              class="w-full border rounded-lg px-3 py-2" />
+      <input type="text" id="note" placeholder="Note"
+             class="w-full border rounded-lg px-3 py-2" />
       <div class="flex space-x-2">
         <button type="button" id="incomeBtn"
                 class="flex-1 bg-green-500 text-white py-2 rounded-lg">Income</button>
         <button type="button" id="expenseBtn"
                 class="flex-1 bg-red-500 text-white py-2 rounded-lg">Expense</button>
       </div>
-      <input type="hidden" id="type" value="income" />
-      <input type="text" id="note" placeholder="Note"
-             class="w-full border rounded-lg px-3 py-2" />
-      <button type="submit" class="w-full bg-blue-500 text-white py-2 rounded-lg">Add</button>
     </form>
 
     <!-- Filters -->

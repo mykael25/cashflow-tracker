@@ -39,10 +39,17 @@ async function saveTransactions(transactions, sha) {
   return res.json();
 }
 
-async function addTransaction(newTransaction) {
+async function addTransaction(type) {
+  const amount = parseFloat(document.getElementById("amount").value);
+  const note = document.getElementById("note").value;
+
+  if (!amount || amount <= 0) return alert("Please enter a valid amount");
+
   const { sha, transactions } = await fetchTransactions();
-  transactions.push(newTransaction);
-  const result = await saveTransactions(transactions, sha);
+  transactions.push({ amount, type, note, date: new Date().toISOString() });
+  await saveTransactions(transactions, sha);
+
+  document.getElementById("transaction-form").reset();
   renderTransactions(transactions);
 }
 
@@ -79,11 +86,9 @@ function renderTransactions(transactions) {
   const list = document.getElementById("transaction-list");
   const summary = document.getElementById("summary");
 
-  // Reset UI before rendering
   list.innerHTML = "";
   summary.innerHTML = "";
 
-  // Filter
   const filtered = filterTransactions(transactions);
 
   let income = 0, expense = 0;
@@ -111,7 +116,6 @@ function renderTransactions(transactions) {
     <p><strong>Balance:</strong> ₱${balance.toFixed(2)}</p>
   `;
 
-  // Chart
   const ctx = document.getElementById("summaryChart").getContext("2d");
   if (chartInstance) chartInstance.destroy();
   chartInstance = new Chart(ctx, {
@@ -123,26 +127,12 @@ function renderTransactions(transactions) {
   });
 }
 
-// Event Listeners
-document.getElementById("transaction-form").addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const amount = parseFloat(document.getElementById("amount").value);
-  const type = document.getElementById("type").value;
-  const note = document.getElementById("note").value;
+// --- Event Listeners ---
+// Income & Expense act as Add buttons
+document.getElementById("incomeBtn").addEventListener("click", () => addTransaction("income"));
+document.getElementById("expenseBtn").addEventListener("click", () => addTransaction("expense"));
 
-  if (!amount || amount <= 0) return alert("Please enter a valid amount");
-
-  await addTransaction({ amount, type, note, date: new Date().toISOString() });
-  e.target.reset();
-});
-
-document.getElementById("incomeBtn").addEventListener("click", () => {
-  document.getElementById("type").value = "income";
-});
-document.getElementById("expenseBtn").addEventListener("click", () => {
-  document.getElementById("type").value = "expense";
-});
-
+// Filters
 document.querySelectorAll(".filter-btn").forEach(btn => {
   btn.addEventListener("click", () => {
     currentFilter = btn.dataset.filter;
@@ -150,11 +140,13 @@ document.querySelectorAll(".filter-btn").forEach(btn => {
   });
 });
 
+// Toggle view
 document.getElementById("toggleView").addEventListener("click", () => {
   compactView = !compactView;
   fetchTransactions().then(({ transactions }) => renderTransactions(transactions));
 });
 
+// Clear all
 document.getElementById("clearAll").addEventListener("click", () => {
   if (confirm("Are you sure you want to delete all records?")) clearAllTransactions();
 });
