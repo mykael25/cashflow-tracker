@@ -6,6 +6,7 @@ let monthlyHalf = null;
 let compactView = false;
 let chartInstance = null;
 let dateRange = { from: null, to: null };
+let searchQuery = "";
 
 let token = localStorage.getItem("gh_token");
 if (!token) {
@@ -95,7 +96,6 @@ function filterTransactions(transactions) {
       return true;
     });
   }
-
   // Date range filter
   if (dateRange.from && dateRange.to) {
     const from = new Date(dateRange.from);
@@ -106,17 +106,30 @@ function filterTransactions(transactions) {
     });
   }
 
+  if (searchQuery) {
+    filtered = filtered.filter((t) => {
+      return (
+        (t.note && t.note.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        t.amount.toString().includes(searchQuery)
+      );
+    });
+  }
+
   return filtered;
 }
 
 function renderTransactions(transactions) {
   const list = document.getElementById("transaction-list");
   const summary = document.getElementById("summary");
+  const countEl = document.getElementById("transactionCount");
 
   list.innerHTML = "";
   summary.innerHTML = "";
 
-  const filtered = filterTransactions(transactions);
+  let filtered = filterTransactions(transactions);
+
+  // Order by date (newest first)
+  filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
 
   let income = 0, expense = 0;
   filtered.forEach((t, idx) => {
@@ -140,6 +153,8 @@ function renderTransactions(transactions) {
     <p><strong>Balance:</strong> ₱${balance.toFixed(2)}</p>
   `;
 
+  countEl.textContent = `${filtered.length} transaction(s) shown`;
+
   const ctx = document.getElementById("summaryChart").getContext("2d");
   if (chartInstance) chartInstance.destroy();
   chartInstance = new Chart(ctx, {
@@ -147,7 +162,6 @@ function renderTransactions(transactions) {
     data: { labels: ["Income", "Expense"], datasets: [{ data: [income, expense], backgroundColor: ["#10B981", "#EF4444"] }] },
   });
 }
-
 // --- Export Functions ---
 async function exportData(mode) {
   const { transactions } = await fetchTransactions();
@@ -163,24 +177,6 @@ async function exportData(mode) {
 
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
   saveAs(blob, `cashflow-${mode}.json`);
-}
-
-async function exportPDF() {
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF();
-  const { transactions } = await fetchTransactions();
-  const filtered = filterTransactions(transactions);
-
-  doc.setFontSize(12);
-  doc.text("Cashflow Report", 10, 10);
-
-  let y = 20;
-  filtered.forEach((t) => {
-    doc.text(`${t.date.split("T")[0]} | ${t.type} | ₱${t.amount} | ${t.note}`, 10, y);
-    y += 8;
-  });
-
-  doc.save("cashflow.pdf");
 }
 
 async function exportScreenshot() {
@@ -226,11 +222,16 @@ document.getElementById("applyRange").addEventListener("click", (e) => {
   fetchTransactions().then(({ transactions }) => renderTransactions(transactions));
 });
 
+// Search
+document.getElementById("searchInput").addEventListener("input", (e) => {
+  searchQuery = e.target.value;
+  fetchTransactions().then(({ transactions }) => renderTransactions(transactions));
+});
+
 // Export buttons
 document.getElementById("exportAll").addEventListener("click", () => exportData("all"));
 document.getElementById("exportRange").addEventListener("click", () => exportData("range"));
 document.getElementById("exportFilter").addEventListener("click", () => exportData("filter"));
-document.getElementById("exportPDF").addEventListener("click", exportPDF);
 document.getElementById("exportScreenshot").addEventListener("click", exportScreenshot);
 
 // Init

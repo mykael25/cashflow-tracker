@@ -6,7 +6,6 @@
   <title>💰 Cashflow Tracker</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
@@ -55,6 +54,12 @@
       <button id="applyRange" class="bg-blue-500 text-white px-3 rounded">Apply</button>
     </div>
 
+    <!-- Search -->
+    <div class="mb-4">
+      <input type="text" id="searchInput" placeholder="Search by note or amount"
+             class="w-full border rounded-lg px-3 py-2" />
+    </div>
+
     <!-- Chart -->
     <div class="mb-4">
       <canvas id="summaryChart"></canvas>
@@ -62,6 +67,7 @@
 
     <!-- Transactions -->
     <h2 class="text-lg font-semibold mb-2">Transactions</h2>
+    <p id="transactionCount" class="text-sm text-gray-600 mb-1"></p>
     <ul id="transaction-list" class="space-y-1"></ul>
 
     <button id="clearAll" class="w-full mt-3 bg-red-600 text-white py-2 rounded-lg">Clear All</button>
@@ -73,7 +79,6 @@
         <button id="exportAll" class="bg-gray-300 py-2 rounded-lg">Download All (JSON)</button>
         <button id="exportRange" class="bg-gray-300 py-2 rounded-lg">Download Date Range (JSON)</button>
         <button id="exportFilter" class="bg-gray-300 py-2 rounded-lg">Download Current Filter (JSON)</button>
-        <button id="exportPDF" class="bg-gray-300 py-2 rounded-lg">Export as PDF</button>
         <button id="exportScreenshot" class="bg-gray-300 py-2 rounded-lg">Save Screenshot</button>
       </div>
     </div>
