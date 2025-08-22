@@ -12,13 +12,12 @@ async function fetchTransactions() {
 }
 
 async function updateTransactions(newData) {
-  // Get current file SHA (needed by GitHub API)
   const res = await fetch(`https://api.github.com/repos/${repo}/contents/${filePath}`, {
     headers: { Authorization: `token ${token}` }
   });
   const file = await res.json();
 
-  await fetch(`https://api.github.com/repos/${repo}/contents/${filePath}`, {
+  const updateRes = await fetch(`https://api.github.com/repos/${repo}/contents/${filePath}`, {
     method: "PUT",
     headers: {
       Authorization: `token ${token}`,
@@ -30,7 +29,11 @@ async function updateTransactions(newData) {
       sha: file.sha
     })
   });
+
+  const result = await updateRes.json();
+  console.log("Update response:", result); // 👈 debug output
 }
+
 
 document.getElementById("expense-form").addEventListener("submit", async e => {
   e.preventDefault();
