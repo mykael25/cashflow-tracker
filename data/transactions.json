@@ -5,11 +5,24 @@
     "note": "salary prev",
     "date": "2025-07-22T07:53:19.077Z"
   },
+  
+  {
+    "amount": 50,
+    "type": "income",
+    "note": "salary 1st half month",
+    "date": "2025-08-10T07:53:19.077Z"
+  },
   {
     "amount": 50,
     "type": "income",
     "note": "salary",
     "date": "2025-08-22T07:53:19.077Z"
+  },
+  {
+    "amount": 24,
+    "type": "expense",
+    "note": "exp 1st half month",
+    "date": "2025-08-15T07:53:33.855Z"
   },
   {
     "amount": 11,
